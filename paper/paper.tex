@@ -10,6 +10,9 @@
 \usepackage{booktabs}
 \usepackage[width=.45\textwidth]{caption}
 
+\usepackage{graphicx}
+\graphicspath{{../figures/}}
+
 \begin{document}
 
 \input{header}
@@ -97,7 +100,7 @@ As EAM is our target, the primary design consideration in coupling Julia with E3
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=3.5cm]{paper/figures/infra.png}
+    \includegraphics[width=\linewidth, height=3.5cm]{infra.png}
     \caption{Overall infrastructure design.}
     \label{fig:infra}
 \end{figure}
@@ -305,7 +308,7 @@ We take these results as a promising sign that our models can capture relevant i
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\linewidth]{paper/figures/ssw_results.png}
+    \includegraphics[width=0.8\linewidth]{ssw_results.png}
     \caption{Generalized extreme value (GEV) model parameter estimates at the end of one simulation year for the non-SSW time periods across the continental United States (coast line denoted with black points). Top: location parameter $\mu$, which shows notable spatial patterns over the Atlantic Ocean and Gulf of Mexico; in addition, a band of lower $\mu$ values appears to stretch through the Midwest region. Bottom: scale parameter $\beta$, which has less smooth spatial structure, but some similarities to the top figure in terms of lower values over bodies of water and through the Midwest region.}
     \label{fig:ssw_results}
 \end{figure}
@@ -320,7 +323,7 @@ The third component indicates cooling in Africa and Europe with warming elsewher
 While these components were extracted from a fairly short simulation run, the results demonstrate the ability of TributaryPCA to extract important climate patterns while running in a distributed in situ environment, without saving any raw data for post-processing.
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\linewidth]{paper/figures/insitu_pca.png}
+    \includegraphics[width=0.8\linewidth]{insitu_pca.png}
     \caption{First three spatial principal components obtained by in situ TributaryPCA method. Within each component, white color indicates no change to surface temperature, while blue indicates colder and red indicates hotter temperatures. The first principal component appears to indicate mild tropical warming with cooling away from the equator. The second principal component indicates warming in much of the Eastern hemisphere and cooling in Africa and the Americas, while the third component indicates primarily cooling in Africa and Europe.}
     \label{fig:pca_results}
 \end{figure}
@@ -364,7 +367,7 @@ We first run the high-resolution E3SM problem with both of the SSW\_GEV and PCA 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=5.5cm]{paper/figures/ssw_break.pdf}
+    \includegraphics[width=\linewidth, height=5.5cm]{ssw_break.pdf}
     \caption{Execution time breakdown for the SSW\_GEV in situ analysis.}
     \label{fig:ssw_break}
 \end{figure}
@@ -372,7 +375,7 @@ We first run the high-resolution E3SM problem with both of the SSW\_GEV and PCA 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=5.5cm]{paper/figures/pca_break.pdf}
+    \includegraphics[width=\linewidth, height=5.5cm]{pca_break.pdf}
     \caption{Execution time breakdown for the PCA in situ analysis.}
     \label{fig:pca_break}
 \end{figure}
@@ -386,7 +389,7 @@ To study how the in situ analysis impacts the E3SM performance, we also run the 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=5.5cm]{paper/figures/ssw_trend.pdf}
+    \includegraphics[width=\linewidth, height=5.5cm]{ssw_trend.pdf}
     \caption{Execution time trends of the SSW\_GEV in situ analysis and the EAM component.}
     \label{fig:ssw_trend}
 \end{figure}
@@ -394,7 +397,7 @@ To study how the in situ analysis impacts the E3SM performance, we also run the 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=5.5cm]{paper/figures/pca_trend.pdf}
+    \includegraphics[width=\linewidth, height=5.5cm]{pca_trend.pdf}
     \caption{Execution time trends of the PCA in situ analysis and the EAM component.}
     \label{fig:pca_trend}
 \end{figure}
@@ -406,7 +409,7 @@ We examine the performance variations across all MPI ranks for SSW\_GEV and PCA 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=6cm]{paper/figures/ssw_outliers.pdf}
+    \includegraphics[width=\linewidth, height=6cm]{ssw_outliers.pdf}
     \caption{Execution time of MPI ranks for the SSW\_GEV in situ analysis.}
     \label{fig:ssw_outliers}
 \end{figure}
@@ -414,7 +417,7 @@ We examine the performance variations across all MPI ranks for SSW\_GEV and PCA 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=6cm]{paper/figures/pca_outliers.pdf}
+    \includegraphics[width=\linewidth, height=6cm]{pca_outliers.pdf}
     \caption{Execution time of MPI ranks for the PCA in situ analysis.}
     \label{fig:pca_outliers}
 \end{figure}

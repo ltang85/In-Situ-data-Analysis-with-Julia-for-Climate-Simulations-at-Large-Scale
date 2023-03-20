@@ -1,0 +1,255 @@
+\begin{thebibliography}{10}
+
+\bibitem{ssw_def}
+David Andrews, Conway Leovy, and James Holton.
+{\em Middle atmosphere dynamics}.
+1 1987.
+
+\bibitem{aycock2003brief}
+John Aycock.
+A brief history of just-in-time.
+{\em ACM Computing Surveys (CSUR)}, 35(2):97--113, 2003.
+
+\bibitem{ssw_survey}
+Mark~P. Baldwin, Blanca Ayarzagüena, Thomas Birner, Neal Butchart, Amy~H.
+  Butler, Andrew~J. Charlton-Perez, Daniela I.~V. Domeisen, Chaim~I. Garfinkel,
+  Hella Garny, Edwin~P. Gerber, Michaela~I. Hegglin, Ulrike Langematz, and
+  Nicholas~M. Pedatella.
+Sudden stratospheric warmings.
+{\em Reviews of Geophysics}, 59(1):e2020RG000708, 2021.
+\href{http://dx.doi.org/https://doi.org/10.1029/2020RG000708}{doi:https://doi.org/10.1029/2020RG000708}.
+
+\bibitem{insitu_star}
+Andrew~C. Bauer, Hasan Abbasi, James Ahrens, Hank Childs, Berk Geveci, Scott
+  Klasky, Kenneth Moreland, Patrick O'Leary, Venkatram Vishwanath, Brad
+  Whitlock, and E.~W. Bethel.
+{In Situ Methods, Infrastructures, and Applications on High Performance
+  Computing Platforms}.
+{\em Computer Graphics Forum}, 2016.
+
+\bibitem{bezanson2017julia}
+Jeff Bezanson, Alan Edelman, Stefan Karpinski, and Viral~B Shah.
+Julia: A fresh approach to numerical computing.
+{\em SIAM review}, 59(1):65--98, 2017.
+\href{http://dx.doi.org/10.1137/141000671}{doi:10.1137/141000671}.
+
+\bibitem{bezanson2012julia}
+Jeff Bezanson, Stefan Karpinski, Viral~B Shah, and Alan Edelman.
+Julia: A fast dynamic language for technical computing.
+{\em arXiv preprint arXiv:1209.5145}, 2012.
+
+\bibitem{broderick2013streaming}
+Tamara Broderick, Nicholas Boyd, Andre Wibisono, Ashia~C Wilson, and Michael~I
+  Jordan.
+Streaming variational bayes.
+{\em Advances in neural information processing systems}, 26, 2013.
+
+\bibitem{ssw}
+Andrew~J. Charlton and Lorenzo~M. Polvani.
+A new look at stratospheric sudden warmings. part i: Climatology and modeling
+  benchmarks.
+{\em Journal of Climate}, 20(3):449 -- 469, 2007.
+\href{http://dx.doi.org/10.1175/JCLI3996.1}{doi:10.1175/JCLI3996.1}.
+
+\bibitem{chen2016smartsim}
+Dong Chen, David Irwin, and Prashant Shenoy.
+Smartsim: A device-accurate smart home simulator for energy analytics.
+In {\em 2016 IEEE International Conference on Smart Grid Communications
+  (SmartGridComm)}, pages 686--692. IEEE, 2016.
+
+\bibitem{insitu_terminology}
+Hank Childs et~al.
+A terminology for in situ visualization and analysis systems.
+{\em The International Journal of High Performance Computing Applications},
+  34(6):676--691, 2020.
+\href{http://dx.doi.org/10.1177/1094342020935991}{doi:10.1177/1094342020935991}.
+
+\bibitem{demmel2012communication}
+James Demmel, Laura Grigori, Mark Hoemmen, and Julien Langou.
+Communication-optimal parallel and sequential qr and lu factorizations.
+{\em SIAM Journal on Scientific Computing}, 34(1):A206--A239, 2012.
+
+\bibitem{ssw_isav}
+Soumya Dutta, Natalie Klein, Li~Tang, Jonathan~David Wolfe, Luke~Van Roekel,
+  James~Joseph Benedict, Ayan Biswas, Earl Lawrence, and Nathan Urban.
+{\em In Situ Climate Modeling for Analyzing Extreme Weather Events}, page
+  18–23.
+Association for Computing Machinery, New York, NY, USA, 2021.
+
+\bibitem{Eyring}
+Veronika Eyring, Sandrine Bony, Gerald~A. Meehl, Catherine~A. Senior, Bjorn
+  Stevens, Ronald~J. Stouffer, and Karl~E. Taylor.
+Overview of the coupled model intercomparison project phase 6 (cmip6)
+  experimental design and organization.
+{\em Geoscientific Model Development}, 9(5):1937--1958, 2016.
+\href{http://dx.doi.org/10.5194/gmd-9-1937-2016}{doi:10.5194/gmd-9-1937-2016}.
+
+\bibitem{catalyst}
+Nathan Fabian, Kenneth Moreland, David Thompson, Andrew~C. Bauer, Pat Marion,
+  Berk Gevecik, Michel Rasquin, and Kenneth~E. Jansen.
+The paraview coprocessing library: A scalable, general purpose in situ
+  visualization library.
+In {\em 2011 IEEE Symposium on Large Data Analysis and Visualization}, pages
+  89--96, 2011.
+\href{http://dx.doi.org/10.1109/LDAV.2011.6092322}{doi:10.1109/LDAV.2011.6092322}.
+
+\bibitem{gabriel2004open}
+Edgar Gabriel, Graham~E Fagg, George Bosilca, Thara Angskun, Jack~J Dongarra,
+  Jeffrey~M Squyres, Vishal Sahay, Prabhanjan Kambadur, Brian Barrett, Andrew
+  Lumsdaine, et~al.
+Open mpi: Goals, concept, and design of a next generation mpi implementation.
+In {\em European Parallel Virtual Machine/Message Passing Interface Users’
+  Group Meeting}, pages 97--104. Springer, 2004.
+
+\bibitem{ge2018turing}
+Hong Ge, Kai Xu, and Zoubin Ghahramani.
+Turing: a language for flexible probabilistic inference.
+In {\em International conference on artificial intelligence and statistics},
+  pages 1682--1690. PMLR, 2018.
+
+\bibitem{golaz2019doe}
+Jean-Christophe Golaz, Peter~M Caldwell, Luke~P Van~Roekel, Mark~R Petersen,
+  Qi~Tang, Jonathan~D Wolfe, Guta Abeshu, Valentine Anantharaj, Xylar~S
+  Asay-Davis, David~C Bader, et~al.
+The doe e3sm coupled model version 1: Overview and evaluation at standard
+  resolution.
+{\em Journal of Advances in Modeling Earth Systems}, 11(7):2089--2129, 2019.
+
+\bibitem{e3sm_v1}
+Jean-Christophe Golaz et~al.
+The doe e3sm coupled model version 1: Overview and evaluation at standard
+  resolution.
+{\em Journal of Advances in Modeling Earth Systems}, 11(7):2089--2129, 2019.
+\href{http://dx.doi.org/https://doi.org/10.1029/2018MS001603}{doi:https://doi.org/10.1029/2018MS001603}.
+
+\bibitem{gropp1996user}
+William Gropp and Ewing Lusk.
+User’s guide for mpich, a portable implementation of mpi, 1996.
+
+\bibitem{henriksen2019adaoja}
+Amelia Henriksen and Rachel Ward.
+Adaoja: Adaptive learning rates for streaming pca.
+{\em arXiv preprint arXiv:1905.12115}, 2019.
+
+\bibitem{gev_huang2016estimating}
+Whitney~K Huang, Michael~L Stein, David~J McInerney, Shanshan Sun, and
+  Elisabeth~J Moyer.
+Estimating changes in temperature extremes from millennial-scale climate
+  simulations using generalized extreme value (gev) distributions.
+{\em Advances in Statistical Climatology, Meteorology and Oceanography},
+  2(1):79--103, 2016.
+
+\bibitem{kelly2020chimbuko}
+Christopher Kelly, Sungsoo Ha, Kevin Huck, Hubertus Van~Dam, Line Pouchard,
+  Gyorgy Matyasfalvi, Li~Tang, Nicholas D'Imperio, Wei Xu, Shinjae Yoo, et~al.
+Chimbuko: A workflow-level scalable performance trace analysis tool.
+In {\em ISAV'20 In Situ Infrastructures for Enabling Extreme-Scale Analysis and
+  Visualization}, pages 15--19. 2020.
+
+\bibitem{ascent}
+Matthew Larsen, James Ahrens, Utkarsh Ayachit, Eric Brugger, Hank Childs, Berk
+  Geveci, and Cyrus Harrison.
+The alpine in situ infrastructure: Ascending from the ashes of strawman.
+In {\em Proceedings of the In Situ Infrastructures on Enabling Extreme-Scale
+  Analysis and Visualization}, ISAV’17, page 42–46, New York, NY, USA,
+  2017. Association for Computing Machinery.
+\href{http://dx.doi.org/10.1145/3144769.3144778}{doi:10.1145/3144769.3144778}.
+
+\bibitem{lattner2004llvm}
+Chris Lattner and Vikram Adve.
+Llvm: A compilation framework for lifelong program analysis \& transformation.
+In {\em International Symposium on Code Generation and Optimization, 2004. CGO
+  2004.}, pages 75--86. IEEE, 2004.
+
+\bibitem{adios}
+Jay~F. Lofstead, Scott Klasky, Karsten Schwan, Norbert Podhorszki, and Chen
+  Jin.
+Flexible io and integration for scientific codes through the adaptable io
+  system (adios).
+In {\em Proceedings of the 6th International Workshop on Challenges of Large
+  Applications in Distributed Environments}, CLADE '08, page 15–24, New York,
+  NY, USA, 2008. Association for Computing Machinery.
+\href{http://dx.doi.org/10.1145/1383529.1383533}{doi:10.1145/1383529.1383533}.
+
+\bibitem{panda2013mvapich}
+Dhabaleswar~K Panda, Karen Tomko, Karl Schulz, and Amitava Majumdar.
+The mvapich project: Evolution and sustainability of an open source production
+  quality mpi library for hpc.
+In {\em Workshop on Sustainable Software for Science: Practice and Experiences,
+  held in conjunction with Int’l Conference on Supercomputing (WSSPE)}, 2013.
+
+\bibitem{qian2018parametric}
+Yun Qian, Hui Wan, Ben Yang, Jean-Christophe Golaz, Bryce Harrop, Zhangshuan
+  Hou, Vincent~E Larson, L~Ruby Leung, Guangxing Lin, Wuyin Lin, et~al.
+Parametric sensitivity and uncertainty quantification in the version 1 of e3sm
+  atmosphere model based on short perturbed parameter ensemble simulations.
+{\em Journal of Geophysical Research: Atmospheres}, 123(23):13--046, 2018.
+
+\bibitem{rasch2019overview}
+PJ~Rasch, S~Xie, P-L Ma, W~Lin, H~Wang, Q~Tang, SM~Burrows, P~Caldwell,
+  K~Zhang, RC~Easter, et~al.
+An overview of the atmospheric component of the energy exascale earth system
+  model.
+{\em Journal of Advances in Modeling Earth Systems}, 11(8):2377--2411, 2019.
+
+\bibitem{sensei_url}
+{{SENSEI}:Scalable in situ analysis and visualization}.
+\url{https://sensei-insitu.org/}, 2021 (accessed April 6, 2022).
+
+\bibitem{thompson2018decline}
+Neil Thompson and Svenja Spanuth.
+The decline of computers as a general purpose technology: Why deep learning and
+  the end of {M}oore's {L}aw are fragmenting computing.
+{\em Available at SSRN 3287769}, 2018.
+
+\bibitem{walker1996mpi}
+David~W Walker and Jack~J Dongarra.
+Mpi: a standard message passing interface.
+{\em Supercomputer}, 12:56--68, 1996.
+
+\bibitem{wang2021tributarypca}
+Yu~Wang, Natalie Klein, Steven Morley, Vania Jordanova, Michael Henderson, Ayan
+  Biswas, and Earl Lawrence.
+Tributarypca: Distributed, streaming pca for in situ dimension reduction with
+  application to space weather simulations.
+In {\em 2021 7th International Workshop on Data Analysis and Reduction for Big
+  Scientific Data (DRBSD-7)}, pages 33--39. IEEE, 2021.
+
+\bibitem{gev_wang2017detection}
+Zhuo Wang, Yujing Jiang, Hui Wan, Jun Yan, and Xuebin Zhang.
+Detection and attribution of changes in extreme temperatures at regional scale.
+{\em Journal of Climate}, 30(17):7035--7047, 2017.
+
+\bibitem{visit}
+Brad Whitlock, Jean~M. Favre, and Jeremy~S. Meredith.
+Parallel in situ coupling of simulation with a fully featured visualization
+  system.
+In {\em Proceedings of the 11th Eurographics Conference on Parallel Graphics
+  and Visualization}, EGPGV '11, pages 101--109. Eurographics Association,
+  2011.
+\href{http://dx.doi.org/10.2312/EGPGV/EGPGV11/101-109}{doi:10.2312/EGPGV/EGPGV11/101-109}.
+
+\bibitem{7192723}
+Jonathan Woodring, Mark Petersen, Andre Schmeißer, John Patchett, James
+  Ahrens, and Hans Hagen.
+In situ eddy analysis in a high-resolution ocean climate model.
+{\em IEEE Transactions on Visualization and Computer Graphics}, 22(1):857--866,
+  2016.
+\href{http://dx.doi.org/10.1109/TVCG.2015.2467411}{doi:10.1109/TVCG.2015.2467411}.
+
+\bibitem{xie2018understanding}
+Shaocheng Xie, Wuyin Lin, Philip~J Rasch, Po-Lun Ma, Richard Neale, Vincent~E
+  Larson, Yun Qian, Peter~A Bogenschutz, Peter Caldwell, Philip Cameron-Smith,
+  et~al.
+Understanding cloud and convective characteristics in version 1 of the e3sm
+  atmosphere model.
+{\em Journal of Advances in Modeling Earth Systems}, 10(10):2618--2644, 2018.
+
+\bibitem{zhang2019evaluation}
+Yuying Zhang, Shaocheng Xie, Wuyin Lin, Stephen~A Klein, Mark Zelinka, Po-Lun
+  Ma, Philip~J Rasch, Yun Qian, Qi~Tang, and Hsi-Yen Ma.
+Evaluation of clouds in version 1 of the e3sm atmosphere model with satellite
+  simulators.
+{\em Journal of Advances in Modeling Earth Systems}, 11(5):1253--1268, 2019.
+
+\end{thebibliography}
