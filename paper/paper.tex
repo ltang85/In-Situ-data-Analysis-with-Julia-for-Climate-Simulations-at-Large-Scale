@@ -4,8 +4,11 @@
 \setcounter{page}{1}
 
 \usepackage{amsmath}
-\usepackage[ruled,vlined]{algorithm2e}
-%\usepackage{algorithm, algorithmic}
+%\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 \usepackage{booktabs}
 \usepackage[width=.45\textwidth]{caption}
@@ -198,37 +201,29 @@ Our first in situ climate analysis algorithm detects extreme weather events call
 
 Here, we briefly present the distributed SSW detection technique that we have developed and deployed in situ with EAM. During the simulation run, when a time marks the end of a day, we further process data from that time step. Initially, we compute the the zonal mean zonal wind at each MPI process independently using zonal velocity (U-velocity). As the EAM mesh does not put grid points exactly at $60^{\circ}$N and $10$ hPa, we first filter two layers of grid points, which are above and below the $10$ hPA pressure level and fall within [$59^{\circ}$N - $61^{\circ}$N] at each MPI process. Then, we linearly interpolate the zonal wind values to obtain values at $60^{\circ}$N and $10$ hPa. Then, using an MPI reduction, we estimate the final global daily zonal mean zonal wind value. Based on the definition of SSW, this value needs to be negative for $10$ consecutive days, so we maintain a global counter variable that keeps track of the number of consecutive days for which the value is negative. Once the value of that counter reaches $10$, we record a SSW event for that simulation year. A pseudo code for this algorithm is provided in Algorithm~\ref{ssw_algo}. Note that when a SSW event is detected, the climate scientists typically are interested in collecting more data from following time steps, so the SSW detection can be used as a triggering event. Using SSW as a triggering event can reduce the overall in situ computation load since the SSW-specific analyses will only happen adaptively when a SSW event is detected.
 
-\begin{algorithm}[t]
-\small{
-\textbf{Input:} EAM simulation data.\\
 
-\textbf{Output:} A list of time steps and corresponding simulation years when SSW is detected.\\
-
-global counter: Keeps track of consecutive negative daily zonal mean zonal wind values.\\
-
-\For{ each EAM time\_step}
-{
-    \eIf{(current\_time\_step == end\_of\_day)}
-    {
-        Compute partial zonal mean zonal wind values at each MPI process.\\
-        Compute the global zonal mean zonal wind with MPI:Reduction.\\
-        \If{(global zonal mean zonal wind < 0)}
-        {
-            counter=counter+1\\
-        }
-        \If{(counter == 10)}
-        {
-            Record current time step as the beginning of a SSW event.\\
-            counter=0\\
-        }
-    }
-    {
-        continue
-    }
-}
-\caption{In situ algorithm for SSW detection.}
-\label{ssw_algo}
-}
+\begin{algorithm}
+\caption{In situ algorithm for SSW detection.}\label{ssw_algo}
+\begin{algorithmic}[1]
+\Require{EAM simulation data.} 
+\Ensure{A list of time steps and corresponding simulation years when SSW is detected.}
+\Statex
+\For{each EAM time\_step}
+  \If{(current\_time\_step == end\_of\_day)}
+    \State Compute partial zonal mean zonal wind values at each MPI process.
+    \State Compute the global zonal mean zonal wind with MPI:Reduction.
+    \If{(global zonal mean zonal wind < 0)}
+    \State counter=counter+1
+    \EndIf
+    \If{((counter == 10))}
+    \State Record current time step as the beginning of a SSW event.
+    \State counter=0
+    \EndIf
+  \Else
+    \State continue
+  \EndIf
+\EndFor
+\end{algorithmic}
 \end{algorithm}
 
 To characterize spatial patterns in surface temperature across CONUS following a detected SSW (compared to no detected SSW), we fit two separate GEV models, similar to~\cite{ssw_isav}. These models represent the distribution of the daily minimum temperatures. Specifically, we transform the surface temperature data by subtracting 300$^\circ$K and multiplying by negative one, then fit GEV models. As described in~\cite{ssw_isav}, Algorithm 1, model parameters are updated periodically using a buffer of recent data, depending on whether or not an SSW event was recently detected. In this paper, we update the GEV models every three days, using the last three days of daily minimum temperatures as the data for modeling. The fitted GEV models then represent distributional information about the data through their parameter estimates, which are updated in situ without the need to save the raw data. In this work, each time the GEV models were to be updated, we used 10 Monte Carlo samples in evaluating each gradient and 500 total optimization iterations each time the models were updated. We used the Adam optimizer from Turing~\cite{ge2018turing} with a learning rate of 0.0001. 
