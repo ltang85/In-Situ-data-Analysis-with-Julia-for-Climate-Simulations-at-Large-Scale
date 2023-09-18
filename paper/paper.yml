@@ -1,21 +1,44 @@
-title: "My JuliaCon proceeding"
+title: "Julia for HPC: In Situ Data Analysis with Julia for Climate Simulations at Large Scale"
 keywords:
   - Julia
-  - Optimization
-  - Game theory
-  - Compiler
+  - In situ
+  - High-performance computing
+  - Climate simulations
 authors:
-  - name: 1st author
-    orcid: 0000-0003-1361-440X
+  - name: Li Tang
+    orcid: 0000-0002-7636-0876
     affiliation: 1
-  - name: 2nd author
+  - name: Soumya Dutta
+    orcid: 0000-0001-5030-9979
     affiliation: 1, 2
-  - name: 3rd author
-    affiliation: 2
+  - name: Natalie Klein
+    orcid: 0000-0002-7532-4013
+    affiliation: 1
+  - name: Wayne Yu Wang
+    affiliation: 3
+  - name: Jonathan David Wolfe
+    orcid: 0000-0002-1322-1385
+    affiliation: 1
+  - name: Luke Van Roekel
+    affiliation: 1    
+  - name: Nathan Urban
+    orcid: 0000-0002-2264-3512
+    affiliation: 4
+  - name: Ayan Biswas
+    orcid: 0000-0002-5535-4549
+    affiliation: 1
+  - name: Earl Lawrence
+    orcid: 0000-0002-6473-1887
+    affiliation: 1        
 affiliations:
-  - name: University
+  - name: Los Alamos National Laboratory
     index: 1
-  - name: National Lab
+  - name: Indian Institute of Technology Kanpur
     index: 2
-date: 24 April 2019
+  - name: University of Michigan
+    index: 3
+  - name: Brookhaven National Laboratory
+    index: 4
+date: 17 September 2023
 bibliography: ref.bib
+
