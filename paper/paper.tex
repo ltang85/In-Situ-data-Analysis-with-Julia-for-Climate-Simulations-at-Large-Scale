@@ -210,8 +210,8 @@ Here, we briefly present the distributed SSW detection technique that we have de
 \Statex
 \For{each EAM time\_step}
   \If{(current\_time\_step == end\_of\_day)}
-    \State Compute partial zonal mean zonal wind values at each MPI process.
-    \State Compute the global zonal mean zonal wind with MPI:Reduction.
+    \State Compute partial zonal mean zonal wind per MPI rank.
+    \State Compute the global zonal mean zonal wind.
     \If{(global zonal mean zonal wind < 0)}
     \State counter=counter+1
     \EndIf
