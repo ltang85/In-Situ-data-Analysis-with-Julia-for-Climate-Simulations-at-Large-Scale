@@ -56,7 +56,7 @@ TO set(INCLDIR "${INCLDIR} -I/turquoise/users/ltang/Install/julia-1.4.0/include/
 2. The E3SM top linking process uses the old Make system and the changes are made in E3SM/cime/scripts/Tools/Makefile  
 IN Line 956  
 CHANGE  
-$(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(MCTLIBS) $(PIOLIB) $(GPTLLIB)  
+\$(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(MCTLIBS) $(PIOLIB) $(GPTLLIB)  
 $(LD) -o $(EXEC_SE) $(OBJS) $(CLIBS) $(ULIBS) $(SLIBS) $(MLIBS) $(F90_LDFLAGS)  
 TO (Note: /turquoise/users/ltang/Install/julia-1.4.0 is my Julia installation path, please change it to your Julia installation path)  
 JULIALIBS = -L'/turquoise/users/ltang/Install/julia-1.4.0/lib' -Wl,--export-dynamic -Wl,-rpath,'/turquoise/users/ltang/Install/julia-1.4.0/lib' -Wl,-rpath,'/turquoise/users/ltang/Install/julia1.4.0/lib/julia' -ljulia  
