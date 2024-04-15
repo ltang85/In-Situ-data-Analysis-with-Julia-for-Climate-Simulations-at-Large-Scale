@@ -2,7 +2,7 @@
 % JuliaCon proceedings template
 \documentclass{juliacon}
 \setcounter{page}{1}
-
+\usepackage{xurl}
 \usepackage{amsmath}
 %\usepackage[ruled,vlined]{algorithm2e}
 \usepackage{algorithm}
@@ -24,9 +24,8 @@
 
 \begin{abstract}
 
-Fast-evolving data science techniques have enabled scientific discoveries in part by providing the ability to analyze large amounts of scientific data and extract relevant patterns.  Scientific simulations offer a unique opportunity to study large-scale, complex systems, such as the Earth's climate, under varying conditions and modeling assumptions. However, one major obstacle to improved utilization of large scientific simulations is the ever-increasing gap between computing speed, which continues to increase, and data I/O bandwidth, which remains relatively constant. This mismatch often prevents full utilization of the data; we are likely unable to save all of the generated data for analysis, and simple solutions such as saving compressed versions of the data for later analysis may be insufficient to answer questions of interest.
 
-In situ data analysis techniques seek to address this issue by completing analysis and pattern extraction from generated scientific data while the application is running, and the in situ data analysis only involves compute and in-memory data I/O, which improves performance. However, one major challenge of employing in situ data analysis to legacy scientific applications is that modern advanced data science techniques are usually not implemented in the same way as the scientific codes (typically, using the Fortran programming language with parallel programming models). To address this challenge, we develop an infrastructure for coupling a popular high-level data science programming language, Julia, with the large-scale production-level climate code Energy Exascale Earth System Model (E3SM) on high performance computing (HPC) systems. To demonstrate the infrastructure, we develop two in situ data analysis methods in Julia and evaluate their performance and the infrastructure overhead. Our results show that our in situ Julia data analysis methods are able to detect extreme weather events and characterize climate patterns with insignificant infrastructure overhead. Furthermore, our infrastructure allows user-friendly development and deployment of new Julia data analysis modules without the need to recompile the simulation code, giving data analysts a simple new tool for in situ analysis.
+Fast-evolving data science techniques have enabled scientific discoveries by providing the ability to analyze large amounts of scientific data and extract relevant patterns. However, the ever-increasing gap between computing speed, which continues to increase, and data input/output (I/O) bandwidth, which remains relatively constant, often prevents full utilization of the data; we are likely unable to save all of the generated data for analysis. In situ data analysis techniques seek to address this issue by completing analysis and pattern extraction from generated scientific data while the application is running, and the in situ data analysis only involves compute and in-memory data I/O, which improves performance. In this paper, we develop an infrastructure for coupling a popular high-level data science programming language, Julia, with the large-scale production-level climate code Energy Exascale Earth System Model (E3SM). To demonstrate the infrastructure, we develop two in situ data analysis methods in Julia and evaluate their performance and the infrastructure overhead. Our results show that our in situ Julia data analysis methods are able to detect extreme weather events and characterize climate patterns with insignificant infrastructure overhead. Furthermore, our infrastructure allows user-friendly development and deployment of new Julia data analysis modules without the need to recompile the simulation code, giving data analysts a simple new tool for in situ analysis.
 
 %\headingtable
 
@@ -34,14 +33,18 @@ In situ data analysis techniques seek to address this issue by completing analys
 
 \section{Introduction}
 
-Computing devices are evolving much faster than storage devices because of their different ratios of performance improvement to R\&D investment in the post-Moore’s Law era~\cite{thompson2018decline}. This trend enlarges the performance gap between our computing and storage devices and greatly limits our ability to analyze all the generated scientific simulation data. When run on HPC systems, modern physics simulations employ thousands of nodes, generating large amounts of data. While this data could possibly be stored for post-processing, write time to disk, available storage space, and post-processing time can be prohibitive, especially at high physics simulation resolution.  At such a high resolution, the three-dimensional physics model state alone can be tens of gigabytes \emph{per} time slice. To address these issues, we adopt in situ data analysis to analyze physics simulation data as the simulation is running. 
-
-
-Our target HPC application is Energy Exascale Earth System Model (E3SM)~\cite{golaz2019doe}. E3SM is the Department of Energy (DOE) state-of-the-science earth system model. It aims to address the most critical and challenging climate problems pertaining to the DOE energy and water security mission by efficiently utilizing DOE’s advanced HPC systems. E3SM includes multiple Earth system components and one coupler to incorporate the components. In this paper, we focus on E3SM's atmosphere component, EAM. To perform high performance in situ data analysis on the EAM simulations, we choose Julia as the programming language because of its superior performance for data analysis and rich support of data analysis packages. Our work aims to provide data scientists with a performant interface for developing in situ data analysis algorithms without directly interacting with complex HPC codes or relying on post-hoc analysis. However, there are three challenges in doing so. First, E3SM's EAM is written in Fortran and adopts Message Passing Interface (MPI) for large-scale parallelism~\cite{walker1996mpi}, and there are no Fortran APIs for embedding Julia into EAM. Second, one MPI rank of EAM is only able to access to its local data (e.g., velocity and temperature), and each in situ Julia data analysis instance can only access the same local data of its parent EAM MPI rank. Last, EAM is compiled and interacting with other E3SM components, and the in situ Julia data analysis should be noninvasive to other E3SM components. To address these challenges, we develop and implement an infrastructure for coupling the Julia runtime with E3SM, which enables effective transfer of data and consistent MPI communication between Julia and E3SM through a minimalist design. 
+Computing devices are evolving much faster than storage devices because of their different ratios of performance improvement to Research and Development (R\&D) investment in the post-Moore’s Law era~\cite{thompson2018decline}. This trend enlarges the performance gap between our computing and storage devices and greatly limits our ability to analyze all the generated scientific simulation data. When run on High-Performance Computing (HPC) systems, modern physics simulations employ thousands of nodes, generating large amounts of data. For example, at a high resolution, the three-dimensional physics model state alone can be tens of gigabytes \emph{per} time slice. While this data could possibly be compressed and then stored with high-performance input/output (I/O) for post-processing~\cite{jin2022accelerating,scorpio}, data movement and post-processing time can be extremely long. To address these issues, we adopt in situ data analysis to analyze physics simulation data as the simulation is running. The in situ data analysis design involves several design and performance tarde-offs in terms of coupling the physics simulation and data analysis, and we will explore some of the trade-offs in this paper.
 
 
 
-To demonstrate the in situ Julia data analysis infrastructure, we implement two in situ data analysis methods in Julia: (1) detection of Sudden Stratospheric Warming (SSW) with generalized extreme value (GEV) analysis, and (2) characterization of large-scale climate patterns via principal components analysis (PCA). SSW events are extreme events in the upper atmosphere (approximately 20km above ground level) that can cause the temperature to rise as much as 50$^o$C in only a few days.  This extreme warming can destabilize the polar vortex, which can in turn lead to rapid swings in surface air temperature. To identify SSWs, we developed an in situ analysis method that documents every occurrence when the zonal mean of the zonal wind becomes reversed (easterly) at 60°N and 10 hPa and lasts for at least 10 consecutive days in northern hemisphere winter. To characterize surface temperature changes that may result from SSWs, we fitted in situ generalized extreme value (GEV) models to the daily minimum surface temperatures at each spatial point in the continental United States (CONUS) via streaming variational inference~\cite{broderick2013streaming}. By updating two separate sets of models (one following SSWs and one not), we examined differences in extreme temperature behavior. Our second data analysis method focuses on PCA of the surface temperatures across the globe. PCA is a common statistical technique for identifying patterns in data that best explain variation in the data. Our TributaryPCA method estimates the top spatial principal component patterns in a streaming, distributed fashion~\cite{wang2021tributarypca}, whereas traditional analysis would need to save data from all spatial locations across many time steps to compute the principal components.
+Our target HPC application is Energy Exascale Earth System Model (E3SM)~\cite{golaz2019doe}. E3SM is the Department of Energy (DOE) state-of-the-science earth system model, and we focus on E3SM's atmosphere component (EAM) in this study. Developing data science techniques is extremely costly by using HPC programming languages such as C/C++ and Fortran due to the ecosystem lacking, so most data analysis programs are implemented by using Python. However, Python's performance is usually slow on HPC systems and we decided to use Julia as the programming language of developing data analysis modules because of its superior performance for data analysis and rich support of data analysis packages~\cite{hunold2020benchmarking}. Therefore, the major challenge of employing in situ data analysis to legacy scientific applications is that modern advanced data science techniques are usually not implemented in the same way as the HPC scientific codes. In this paper, we hypothesize that the Fortran-based EAM can be effectively coupled with in situ Julia-based data analysis modules on HPC systems.
+
+
+
+
+
+
+To validate our hypothesis and demonstrate the in situ Julia data analysis infrastructure, we implement two in situ data analysis methods in Julia: (1) detection of Sudden Stratospheric Warming (SSW) with generalized extreme value (GEV) analysis, and (2) characterization of large-scale climate patterns via principal components analysis (PCA). SSW events are extreme events in the upper atmosphere (approximately 20km above ground level) that can cause the temperature to rise as much as 50$^o$C in only a few days.  This extreme warming can destabilize the polar vortex, which can in turn lead to rapid swings in surface air temperature. To identify SSWs, we developed an in situ analysis method that documents every occurrence when the zonal mean of the zonal wind becomes reversed (easterly) at 60°N and 10 hPa and lasts for at least 10 consecutive days in northern hemisphere winter. To characterize surface temperature changes that may result from SSWs, we fitted in situ generalized extreme value (GEV) models to the daily minimum surface temperatures at each spatial point in the continental United States (CONUS) via streaming variational inference~\cite{broderick2013streaming}. By updating two separate sets of models (one following SSWs and one not), we examined differences in extreme temperature behavior. Our second data analysis method focuses on PCA of the surface temperatures across the globe. PCA is a common statistical technique for identifying patterns in data that best explain variation in the data. Our TributaryPCA method estimates the top spatial principal component patterns in a streaming, distributed fashion~\cite{wang2021tributarypca}, whereas traditional analysis would need to save data from all spatial locations across many time steps to compute the principal components.
 
 
 This paper presents a practical case study that uses Julia-based analysis in situ with a large-scale HPC application. The major benefit of this work is that it provides a reference design for coupling Julia with modern large-scale HPC applications which could be applied to other HPC applications with minimal effort.
@@ -51,11 +54,24 @@ Another benefit of this work is an accurate and quantitative view of how the Jul
 \item We develop a novel in situ data analysis infrastructure for coupling E3SM with Julia for in situ data analysis at large-scale with high productivity.
 \item We develop two in situ Julia data analysis methods for E3SM's EAM data at large-scale for identifying sudden stratospheric warmings and identifying dominant spatial patterns in temperature.
 \item We evaluate the performance of this coupling infrastructure on a large-scale HPC system and study various design considerations, leading to guidelines for adopting Julia for in situ data analysis on other HPC applications.
+\item We have open-sourced the code and instructions of reproducing this in situ data analysis with E3SM in \url{https://github.com/ltang85/In-Situ-data-Analysis-with-Julia-for-Climate-Simulations-at-Large-Scale/tree/main/src}.
 \end{enumerate}
 
 
-\section{Background and Related Work}
+This paper is organized in the following structure. Section~\ref{sec2} provides the background information and discusses some related works. Section~\ref{sec3} presents the in situ infrastructure that couples the EAM and the in situ Julia modules. Section~\ref{sec4} describes the algorithms of our two in situ Julia modules. Section~\ref{sec5} shows the experimental results, and section~\ref{sec6} summarizes this paper.
+
+
+
+\section{Background and Related Work} \label{sec2}
+
 In this section, we describe the E3SM HPC simulation, the Julia programming language, and the general concept of in situ data analysis before discussing recent closely related work.
+
+
+
+
+
+Our work aims to provide data scientists with a performant interface for developing in situ data analysis algorithms without directly interacting with complex HPC codes or relying on post-hoc analysis. However, there are three challenges in doing so. First, E3SM's EAM is written in Fortran and adopts Message Passing Interface (MPI) for large-scale parallelism~\cite{walker1996mpi}, and there are no Fortran APIs for embedding Julia into EAM. Second, one MPI rank of EAM is only able to access to its local data (e.g., velocity and temperature), and each in situ Julia data analysis instance can only access the same local data of its parent EAM MPI rank. Last, EAM is compiled and interacting with other E3SM components, and the in situ Julia data analysis should be noninvasive to other E3SM components. To address these challenges, we develop and implement an infrastructure for coupling the Julia runtime with E3SM, which enables effective transfer of data and consistent MPI communication between Julia and E3SM through a minimalist design. 
+
 
 \subsection{E3SM}
 
@@ -65,25 +81,24 @@ E3SM is the new earth system model developed by DOE to answer critical DOE missi
 
 \subsection{Julia}
 
-Julia is a dynamically-typed programming language that is for general-purpose application development and provides many Python-like features (e.g., rich package support)~\cite{bezanson2012julia}. The first public Julia release was introduced in 2013 and it is designed to provide users with the speed of C/C++/Fortran~\cite{bezanson2017julia} while giving a convenient high-level programming environment. Julia is a built on top of a modularized compiler framework, Low Level Virtual Machine (LLVM)~\cite{lattner2004llvm}, and features a Just-In-Time (JIT) compilation engine~\cite{aycock2003brief}. Therefore, Julia is ideal for agile development of advanced data science algorithms due to its speed and effectiveness in solving computationally complex problems. In addition, Julia can couple with C/C++/Fortran applications that are naturally supported by LLVM. Also, Julia has support for parallelism and concurrency, which are crucial for HPC applications. In this paper, our major goal is to increase productivity by allowing data scientists to focus on writing high-level, performant numerical algorithms for legacy HPC applications at large-scale.
+Julia is a dynamically-typed programming language that is for general-purpose application development and provides many Python-like features (e.g., rich package support)~\cite{bezanson2012julia}. The first public Julia release was introduced in 2013 and it is designed to provide users with the speed of C/C++/Fortran~\cite{bezanson2017julia} while giving a convenient high-level programming environment. Julia is a built on top of the modularized LLVM compiler infrastructure~\cite{lattner2004llvm}, and features a Just-In-Time (JIT) compilation engine~\cite{aycock2003brief}. Therefore, Julia is ideal for agile development of advanced data science algorithms due to its speed and effectiveness in solving computationally complex problems. Also, Julia has support for parallelism and concurrency, which are crucial for HPC applications. In this paper, our major goal is to increase productivity by allowing data scientists to focus on writing high-level, performant numerical algorithms for legacy HPC applications at large-scale.
 
 
 
 
 
 
-\subsection{In Situ Data Analysis}
+\subsection{In Situ Data Analysis} 
 
 
-Conventionally, large-scale HPC applications write their simulated scientific data to slow disks for post-hoc usage such as data analysis and visualization. As discussed before, the speed gap between computing and I/O is increasing, and modern supercomputers can generate large amounts of data that may not be fully stored. Therefore, the in situ approach is a processing technique that conducts the conventional post-hoc data analysis on the fly while the HPC application is still running, rather than using the data after it has been dumped to disk. That is, conventional disk I/O is converted to in-memory processing, which increases speed and enables analysis on full, rather than compressed and stored, simulation data. Employing this in situ technique enables novel data analysis methods that require large amounts of high-resolution simulation data from E3SM.
-
+Conventionally, large-scale HPC applications write their simulated scientific data to slow disks for post-hoc usage such as data analysis and visualization. As discussed before, the speed gap between computing and I/O is increasing, and modern supercomputers can generate large amounts of data that may not be fully stored. Therefore, the in situ approach is a processing technique that conducts the conventional post-hoc data analysis on the fly while the HPC application is still running, rather than using the data after it has been dumped to disk. That is, conventional disk I/O is converted to in-memory processing, which increases speed and enables analysis on full, rather than compressed and stored, simulation data. Employing this in situ technique enables novel data analysis methods that require large amounts of high-resolution simulation data from E3SM. Two conventional alternatives are data compression and high-performance I/O. For example, the Software for Caching Output and Reads for Parallel I/O (SCORPIO) library is used by E3SM for parallel data I/O~\cite{scorpio}.
 
 
 
 
 \subsection{Related Work}
 
-The in situ approach has been studied in recent years and has been employed in different aspects of HPC. First, there are existing in situ frameworks, such as Ascent~\cite{ascent}, ParaView Catalyst~\cite{catalyst}, SENSEI~\cite{sensei_url}, VisIt libSIM~\cite{visit}, and SmartSim~\cite{chen2016smartsim}. These developed frameworks aim to help users build data analysis and data visualization, but none of them supports the Julia programming language. Second, the open-sourced ADIOS/ADIOS2~\cite{adios} data I/O system and the studies of Chimbuko/CODAR~\cite{kelly2020chimbuko} have explored data reduction for in situ approaches and researched the performance optimization of the whole in situ data analysis workflow. Last, previous studies have been made on optimizing the complex workflow that involves complex HPC applications and post-hoc data analysis. However, these studies still require significant I/O on disk storage and are not able to help reduce the data. For a more comprehensive summary of in situ infrastructures, readers are referred to~\cite{insitu_star,insitu_terminology}. 
+The in situ approach has been studied in recent years and has been employed in different aspects of HPC. First, there are existing in situ frameworks, such as Ascent~\cite{ascent}, ParaView Catalyst~\cite{catalyst}, SENSEI~\cite{sensei_url}, VisIt libSIM~\cite{visit}, and SmartSim~\cite{chen2016smartsim}. These developed frameworks aim to help users build data analysis and data visualization, but none of them supports the Julia programming language. Second, the open-sourced ADIOS/ADIOS2~\cite{adios, godoy2020adios} data I/O system and the studies of Chimbuko/CODAR~\cite{kelly2020chimbuko} have explored data reduction for in situ approaches and researched the performance optimization of the whole in situ data analysis workflow. Last, previous studies have been made on optimizing the complex workflow that involves complex HPC applications and post-hoc data analysis. However, these studies still require significant I/O on disk storage and are not able to help reduce the data. For a more comprehensive summary of in situ infrastructures, readers are referred to~\cite{insitu_star,insitu_terminology}. 
 
 
 The demand for scalable algorithms for analyzing climate data is growing rapidly as computational climate simulations scale up, leading to growing output data size and prompting scientists to turn to in situ analysis approaches. For example, in situ analysis of eddies in large-scale MPAS-Ocean simulation data was done by Woodring et al.~\cite{7192723}. In this work, we focus on two data analysis questions of interest to climate scientists and demonstrate their in situ application. For extreme weather event analysis, the connection of SSW with the polar vortex events is a focus area for climatologists~\cite{ssw_survey}. More recently, scientists have also used extreme-value distribution models for capturing rare climate phenomena and further analyzing them in detail~\cite{gev_huang2016estimating, gev_wang2017detection}. In our recent work, the usefulness of in situ SSW analysis was also demonstrated~\cite{ssw_isav}.
@@ -92,13 +107,12 @@ TributaryPCA is an adaptation of PCA, a statistical method for reducing the dime
 
 
 
-
-\section{In Situ Infrastructure}
+\section{In Situ Infrastructure}  \label{sec3}
 Our in situ infrastructure consists of a Fortran interface, a C interface, and a Julia interface, which we describe in turn after introducing the overall design.
 
 \subsection{Overall Design}
 
-As EAM is our target, the primary design consideration in coupling Julia with E3SM is the identification of an appropriate entry point in E3SM's EAM for calling in situ Julia data analysis modules. EAM is simulated in the time-step style, so we place the entry point of calling in situ data analysis in the control of data output for each time step. The second design consideration is the management of in situ Julia data analysis. We implement the Julia management in EAM at the in situ entry point because E3SM schedules the jobs of EAM and other components. Last, due to the lack of APIs for embedding Julia in Fortran with MPI, we develop a C interface to help the communication between E3SM and Julia. To make the C interface flexible, we also define and develop a simple Julia interface for quickly adopting various in situ Julia data analysis methods without interacting with E3SM. The whole design is shown in Figure~\ref{fig:infra}.
+As EAM is our target, the primary design consideration in coupling Julia with E3SM is the identification of an appropriate entry point in E3SM's EAM for calling in situ Julia data analysis modules. EAM is simulated in the time-step style, so we place the entry point of calling in situ data analysis in the control of data output for each time step. The second design consideration is the management of in situ Julia data analysis. We implement the Julia management in EAM at the in situ entry point because E3SM schedules the jobs of EAM and other components. Last, due to the lack of APIs for embedding Julia in Fortran with MPI, we develop a C interface to help the communication between E3SM and Julia. The MPI communication relies on the MPI interface for the Julia language~\cite{byrne2021mpi}. To make the C interface flexible, we also define and develop a simple Julia interface for quickly adopting various in situ Julia data analysis methods without interacting with E3SM. The whole design is shown in Figure~\ref{fig:infra}. Our primary target data consumption pattern of the in situ data analysis module is that the in situ module can consume any intermediate simulation data in a non-invasive way, which is independent on the simulation output. Also, this in situ infrastructure enables superior data analysis capability over the alternative data compression or high-performance I/O solutions when the simulation is running at larger scales or higher resolutions.
 
 
 \begin{figure}
@@ -144,7 +158,7 @@ void jl_exit_(){
 \end{minipage}
 
 
-The worker function in the C interface aims to support efficient low-level data communication between E3SM and the in situ Julia data analysis. The key implementation of this C interface is shown in the following code snippet. Each MPI rank of EAM has access to only a local data block of EAM variables (e.g., velocity and temperature) and passes its local data block's pointer (e.g., \texttt{arr} and \texttt{p\_arr} in the code snippet) to its own in situ Julia instance through the C interface. When the in situ Julia instance needs remote data (e.g., for computation of SSW) from other in situ Julia instances, \texttt{MPI.jl} is used in the Julia interface to implement the data communication between different in situ Julia instances. However, one key design challenge is to assure that E3SM and Julia use the same MPI communicator for correct data communication, as current Julia C embeddings are not able to directly pass the MPI communicator. To address this challenge, we transfer the original Fortran MPI communicator to this C interface without conversions, and then wrap it as \textit{jl\_box\_int32} and pass it to the Julia interface. The Fortran MPI communicator will be converted to Julia MPI communicator in the Julia interface. It is also important to conduct garbage collection (GC) in this C interface for every time step. This is because \texttt{arr} and \texttt{p\_arr} in the code snippet are allocated and then deallocated in E3SM for every time step, and the Julia runtime is not aware of this and hence needs explicit GC.
+The worker function in the C interface aims to support efficient low-level data communication between E3SM and the in situ Julia data analysis. The key implementation of this C interface is shown in the following code snippet. Each MPI rank of EAM has access to only a local data block of EAM variables (e.g., velocity and temperature) and passes its local data block's pointer (e.g., \texttt{arr} and \texttt{p\_arr} in the code snippet) to its own in situ Julia instance through the C interface. When the in situ Julia instance needs remote data (e.g., for computation of SSW) from other in situ Julia instances, \texttt{MPI.jl} is used in the Julia interface to implement the data communication between different in situ Julia instances. However, one key design challenge is to assure that E3SM and Julia use the same MPI communicator for correct data communication, as current Julia C embeddings are not able to directly pass the MPI communicator. To address this challenge, we transfer the original Fortran MPI communicator to this C interface without conversions, and then wrap it as \textit{jl\_box\_int32} and pass it to the Julia interface. The Fortran MPI communicator will be converted to Julia MPI communicator in the Julia interface. It is also important to root the Julia objects in this C interface between \textit{JL\_GC\_PUSH3()} and \textit{JL\_GC\_POP()}, preventing that the garbage collection (GC) frees the Julia references of \texttt{arr} and \texttt{p\_arr} in this C interface accidentally. This is because \texttt{arr} and \texttt{p\_arr} in the code snippet are allocated and deallocated in E3SM for every time step, and the Julia rooting can hold the references safely when running the Julia code.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = C, caption={C interface worker.}]
@@ -187,19 +201,25 @@ Jcomm = MPI.Comm(Cint(Jcomm))
 
 
 \subsection{Noninvasive Compilation}
-The final design consideration is the compilation and execution design of coupling Julia with E3SM. The Fortran interface is implemented inside EAM, and the C interface file is placed in the same folder of the Fortran interface. The in situ Julia module is placed in the same run folder with the E3SM executable. As E3SM mixes the usage of GNU Make and CMake for combining and compiling different E3SM components, we have added the Julia compilation flags for the C and Fortran interfaces into the EAM CMake file (i.e., header files) and the top-level GNU Make file (i.e., Julia libraries). The in situ Julia module is only compiled when it is called during runtime, which avoids recompiling the whole of E3SM if the in situ Julia module needs to be changed.
+The final design consideration is the compilation and execution design of coupling Julia with E3SM. The Fortran interface is implemented inside EAM, and the C interface file is placed in the same folder of the Fortran interface. The in situ Julia module is placed in the same run folder with the E3SM executable. As E3SM mixes the usage of GNU Make and CMake for combining and compiling different E3SM components, we have added the Julia compilation flags for the C and Fortran interfaces into the EAM CMake file (i.e., header files) and the top-level GNU Make file (i.e., Julia libraries). As we load the in situ Julia module via the Just-In-Time (JIT) scenario, the in situ Julia module is only compiled when it is called during runtime. Therefore, the whole infrastructure avoids recompiling the whole of E3SM when the in situ Julia module needs to be changed, and the in situ Julia module can be easily switched by only replacing the code of the same module file.
 
 
 
 
 
-\section{Data Analysis Modules}
+\section{Data Analysis Modules} \label{sec4}
 In this section, we describe the two demonstration data analysis modules: detecting SSW with extreme value modeling, and TributaryPCA.
 
 \subsection{Sudden Stratospheric Warming (SSW)}
+
+SSW events often lead to extreme cold temperatures across the United States, sometimes referred to as polar vortex events, which can have severe downstream impacts on energy systems (e.g., power grid) and on human lives. Accurate prediction of SSWs in simulations requires monitoring zonal winds at high temporal frequency; this is challenging in traditional simulation work flows due to data storage and access bottlenecks.
+
+
+
+
 Our first in situ climate analysis algorithm detects extreme weather events called SSWs. By definition, SSW is characterized as a major midwinter warming that occurs when the daily zonal mean zonal winds at $60^{\circ}$N and $10$ hPa (hectopascal) become easterly for at least $10$ consecutive days between November and March~\cite{ssw,ssw_def}. This event can result in extremely cold temperatures at Earth's surface, causing hazardous weather and disrupting many socioeconomic sectors. Since the robust detection of rare SSW events requires spatiotemporal climate data at high temporal frequencies, for high-resolution EAM runs, post-hoc SSW detection capabilities are limited as storage of high-resolution and high-frequency climate data would be prohibitive. Therefore, an in situ SSW detection algorithm is required.
 
-Here, we briefly present the distributed SSW detection technique that we have developed and deployed in situ with EAM. During the simulation run, when a time marks the end of a day, we further process data from that time step. Initially, we compute the the zonal mean zonal wind at each MPI process independently using zonal velocity (U-velocity). As the EAM mesh does not put grid points exactly at $60^{\circ}$N and $10$ hPa, we first filter two layers of grid points, which are above and below the $10$ hPA pressure level and fall within [$59^{\circ}$N - $61^{\circ}$N] at each MPI process. Then, we linearly interpolate the zonal wind values to obtain values at $60^{\circ}$N and $10$ hPa. Then, using an MPI reduction, we estimate the final global daily zonal mean zonal wind value. Based on the definition of SSW, this value needs to be negative for $10$ consecutive days, so we maintain a global counter variable that keeps track of the number of consecutive days for which the value is negative. Once the value of that counter reaches $10$, we record a SSW event for that simulation year. A pseudo code for this algorithm is provided in Algorithm~\ref{ssw_algo}. Note that when a SSW event is detected, the climate scientists typically are interested in collecting more data from following time steps, so the SSW detection can be used as a triggering event. Using SSW as a triggering event can reduce the overall in situ computation load since the SSW-specific analyses will only happen adaptively when a SSW event is detected.
+Here, we briefly present the distributed SSW detection technique that we have developed and deployed in situ with EAM. During the simulation run, when a time marks the end of a day, we further process data from that time step. Initially, we compute the the zonal mean zonal wind at each MPI process independently using zonal velocity (U-velocity). As the EAM mesh does not put grid points exactly at $60^{\circ}$N and $10$ hPa, we first filter two layers of grid points, which are above and below the $10$ hPA pressure level and fall within [$59^{\circ}$N - $61^{\circ}$N] at each MPI process. Then, we linearly interpolate the zonal wind values to obtain values at $60^{\circ}$N and $10$ hPa. Then, using an MPI reduction, we estimate the final global daily zonal mean zonal wind value. Based on the definition of SSW, this value needs to be negative for at least $10$ consecutive days, so we maintain a global counter variable that keeps track of the number of consecutive days for which the value is negative. Once the value of that counter reaches $10$, we record a SSW event for that simulation year (where the event continues until the mean zonal wind becomes non-negative again). A pseudo code for this algorithm is provided in Algorithm~\ref{ssw_algo}. Note that when a SSW event is detected, the climate scientists typically are interested in collecting more data from following time steps, so the SSW detection can be used as a triggering event. Using SSW as a triggering event can reduce the overall in situ computation load since the SSW-specific analyses will only happen adaptively when a SSW event is detected.
 
 
 \begin{algorithm}
@@ -216,11 +236,13 @@ Here, we briefly present the distributed SSW detection technique that we have de
     \State values with MPI:Reduction.
     \If{(global zonal mean zonal wind < 0)}
     \State counter=counter+1
+    \Else
+    \State counter=0
     \EndIf
     \If{((counter == 10))}
     \State Record current time step as the beginning of
     \State a SSW event.
-    \State counter=0
+    %\State counter=0
     \EndIf
   \Else
     \State continue
@@ -229,7 +251,7 @@ Here, we briefly present the distributed SSW detection technique that we have de
 \end{algorithmic}
 \end{algorithm}
 
-To characterize spatial patterns in surface temperature across CONUS following a detected SSW (compared to no detected SSW), we fit two separate GEV models, similar to~\cite{ssw_isav}. These models represent the distribution of the daily minimum temperatures. Specifically, we transform the surface temperature data by subtracting 300$^\circ$K and multiplying by negative one, then fit GEV models. As described in~\cite{ssw_isav}, Algorithm 1, model parameters are updated periodically using a buffer of recent data, depending on whether or not an SSW event was recently detected. In this paper, we update the GEV models every three days, using the last three days of daily minimum temperatures as the data for modeling. The fitted GEV models then represent distributional information about the data through their parameter estimates, which are updated in situ without the need to save the raw data. In this work, each time the GEV models were to be updated, we used 10 Monte Carlo samples in evaluating each gradient and 500 total optimization iterations each time the models were updated. We used the Adam optimizer from Turing~\cite{ge2018turing} with a learning rate of 0.0001. 
+To characterize spatial patterns in surface temperature across CONUS following a detected SSW (compared to no detected SSW), we fit two separate GEV models, similar to~\cite{ssw_isav}. These models represent the distribution of the daily minimum temperatures separately at each spatial location. Specifically, we transform the surface temperature data by subtracting 300$^\circ$K and multiplying by negative one, then fit GEV models. Briefly, we fit Gumbel models with probability density function $p(x; \mu, \beta) = \frac{1}{\beta}\exp \left\{ -\left[ \frac{x-\mu}{\beta}+\exp\left( -\frac{x-\mu}{\beta}\right)\right] \right\}$ where the initial priors are $p(\mu) \sim \mathcal{N}(0, 10)$ and $\beta \sim \text{LogNormal}(0, 0,5)$. As described in~\cite{ssw_isav}, Algorithm 1, model parameters are updated periodically using a buffer of recent data, depending on whether or not an SSW event was recently detected; at each step, the approximate variational posterior distribution from the previous step is used as the prior when updating the model with the new data point to achieve approximate streaming Bayesian inference across time points. In this paper, we update the GEV models every three days, using the last three days of daily minimum temperatures as the data for modeling. The fitted GEV models then represent distributional information about the data through their parameter estimates, which are updated in situ without the need to save the raw data. In this work, each time the GEV models were to be updated, we used 10 Monte Carlo samples in evaluating each gradient and 500 total optimization iterations each time the models were updated. We used the Adam optimizer from Turing~\cite{ge2018turing} with a learning rate of 0.0001. 
 
 \subsection{TributaryPCA} 
 As described more fully in~\cite{wang2021tributarypca}, TributaryPCA solves the standard PCA objective in a distributed, online fashion; we give a brief overview of the implementation here.
@@ -245,24 +267,31 @@ In the streaming setting, the AdaOja algorithm~\cite{henriksen2019adaoja} seeks 
 That is, the estimated eigenvectors $V$ are adjusted as each data point arrives (over time) using the gradient of Equation~\eqref{eqn:pca-obj} evaluated at the new data point.
 This procedure consists of three key steps: a gradient computation, a learning rate update, and a QR decomposition (to ensure orthogonality of the estimated eigenvectors).
 The TributaryPCA algorithm (1) computes the gradient in a distributed fashion using data stored on each node and MPI \texttt{allreduce}, (2) updates the learning rate in a distributed fashion using MPI \texttt{allreduce}, (3) applies the stochastic gradient update on each node, and (4) uses distributed linear algebra~\cite{demmel2012communication} to orthogonalize the estimated $V$ (collected from all nodes using MPI \texttt{reduce}).
-The key portion of the in situ code (that would be called at each time step during the simulation) is shown in the following listing, where \texttt{X\_par} is the data on the current node, \texttt{V\_par} is the node's spatial subset of the current global estimate of the eigenvectors, \texttt{comm} is the MPI communicator object, \texttt{master} denotes the root/master node, and \texttt{grad\_par}, \texttt{abs2}, $\alpha$ are pre-initialized arrays.
-
+In streaming PCA, data $X_i \in \mathbb{R}^{d \times 1}, i=1,...,N$ arrives sequentially and the goal is to compute $V$ using all $N$ samples, where $V$ is updated sequentially with the current estimate denoted as $V_i$. 
+The AdaOja algorithm relies on an initial learning rate $\alpha$ which we initialize to $1e-5$. In TributaryPCA, we have the additional complication that data $X_i$ is partitioned across $B$ compute nodes. 
+The key portion of the in situ code (that would be called at each time step during the simulation) is shown in the following listing, where \texttt{X\_par} is the data on the current node (of shape $d_b \times 1$ where $d_B$ is the dimension of the data on a single compute node indexed by $b$), \texttt{V\_par} is the node's spatial subset of the current global estimate of the eigenvectors (of shape $d_B \times k)$, \texttt{comm} is the MPI communicator object, \texttt{master} denotes the root/master node, and \texttt{grad\_par}, \texttt{abs2}, $\alpha$ are pre-initialized arrays.
+The code has three key steps: first, the gradient for the AdaOja streaming PCA update is computed; this quantity is $X_i X_i^T V_{i-1}$, which is computed with a local dot product at each node followed by an \texttt{Allreduce} to combine results across nodes, and another multiplication locally.
+The second step is to update the learning rate based on the norm of the gradient and take a gradient step to update $V_{i-1}$ to $V_i$ based on data $X_i$.
+Finally, the result must be projected to ensure $V_i$ is orthogonal.
+This is accomplished by QR decomposition $V_i = Q_i R_i$ where $V_i$ is updated to the orthogonal $Q_i$. 
+For distributed QR decomposition, we use CholeskyTSQR~\cite{demmel2012communication}.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = Julia, caption={Key algorithmic steps of TributaryPCA in Julia.}]
-# Compute gradient
-XT_V_par = copy(X_par') * V_par
+# Step 1: Compute gradient for AdaOja
+XT_V_par = X_par' * V_par
 XT_V = MPI.Allreduce(XT_V_par, +, comm)
 mul!(grad_par, X_par, XT_V, 1.0/N, 0.0)
-# Update learning rate α
+# Step 2: Update learning rate α and apply gradient update
 s = sum(abs2, grad_par, dims = 1)[:]
 grad_norm_sq = MPI.Allreduce(s, +, comm) 
 α .+= grad_norm_sq 
 # Apply local gradient update
 α_r = reshape(sqrt.(α), (1, size(α, 1)))
 V_par .+= grad_par ./ α_r
-# Orthogonalize to form global update of V
-VT_V_par = copy(V_par') * V_par
+# Step 3: Projection -- Orthogonalize to 
+#         form global update of V
+VT_V_par = V_par' * V_par
 VT_V = MPI.Reduce(VT_V_par, +, master, comm)
 if node_id == master
     chol = cholesky!((VT_V + copy(VT_V')) / 2)
@@ -279,7 +308,7 @@ V_par .= V_par * Rinv
 
 
 
-\section{Experiments}
+\section{Experiments} \label{sec5}
 
 This section first summarizes the experimental setup for our in situ tests, including the application setup, conducted problems, build process and the underlying systems. Then we will show the in situ data analysis results of our in situ SSW and PCA Julia modules. Finally, we discuss the performance of this framework and some insights of conducting in situ Julia data analysis with large-scale scientific applications on modern supercomputers.
 
@@ -290,6 +319,28 @@ We have run all our experiments on a cluster, Grizzly, located at Los Alamos Nat
 The system runs on a Tri-Lab Operating System Stack (TOSS) and its nodes are connected by Intel OmniPath Host Fabric Interface (HFI) single port via PCIex16.
 Grizzly uses Slurm for job scheduling and resource management. The total storage is 15PB.
 
+
+
+\begin{table}
+\centering 
+  \caption{The E5-2695V4 CPU specifications}
+  \label{table:layout}
+  \begin{tabular}{lc}
+ \toprule
+  Specifications & Values \\
+ \midrule
+ Total Cores  & 18 \\
+ Total Threads  & 36\\
+ Max Turbo Frequency   & 3.30 GHz\\
+ Processor Base Frequency & 2.10 GHz\\
+ Cache   & 45 MB\\
+ Memory Types  & DDR4\\
+ Max Memory Bandwidth & 76.8 GB/s\\
+ \bottomrule
+\end{tabular}
+\end{table}
+
+
 To deploy our in situ algorithms, we have run the fully coupled E3SM simulation and accessed the data from its Atmosphere model, EAM, for analyses. The EAM module runs in conjunction with other coupled modules (MPAS-Ocean, MPAS Sea Ice, MPAS Land Ice, and Land Surface) to produce scientifically meaningful climate data. In this work, we use a realization of the Shared Socioeconomic Pathway (SSP) $585$ scenario~\cite{Eyring} with E3SM. This is an aggressive scenario that assumes the climate will experience an increase in radiative forcing of $8.5$ W/m$^2$. We use the standard E3SM V1 configuration with a $1^{\circ}$ atmosphere and land (equivalent to 110 km at the equator), $0.5^{\circ}$ river model ($55$ km), and an ocean and sea ice with mesh spacing varying between $60$ km in the midlatitudes and $30$ km at the equator and poles~\cite{e3sm_v1}. %To run optimally, E3SM simulation test cases are often configured to run on a specific number of MPI processes and this particular case is optimized to run on $3024$ cores, which is equivalent to running it on $84$ computing nodes in Grizzly.
 
 
@@ -297,7 +348,7 @@ Our tests fall into two data analysis tasks: SSW and PCA. Importantly, E3SM is o
 
 \subsection{In Situ SSW Detection and Characterization Results}
 After running for 365 simulation days (one simulated year), with the GEV models updated every three days, we found that the post-SSW GEV model was updated 11 total times while the non-SSW GEV model was updated 110 times.
-More detailed analysis of offline data, including comparison of SSW and non-SSW models, can be found in~\cite{ssw_isav}; for the purposes of this paper, we will show the GEV modeling results for the non-SSW simulation periods because the models were updated more total times.
+More detailed analysis of offline data, including comparison of SSW and non-SSW models, can be found in~\cite{ssw_isav}; for the purposes of this paper, we are interested in demonstrating the in situ, streaming modeling approach in general rather than drawing specific conclusions from the simulation in question. As a result, we will show the GEV modeling results for the non-SSW simulation periods because the models were updated more total times and therefore achieve lower parameter variance and greater interpretability.
 Figure \ref{fig:ssw_results} shows the GEV model parameters $\mu$ (location) and $\beta$ (scale) for the non-SSW time periods at the conclusion of one simulated year. 
 While the parameter values can be somewhat difficult to interpret directly, we emphasize that these saved parameter values, taking only a fraction of the storage space of the original data, can provide rich information about the distribution of minimum temperatures; for instance, we can use the model parameters to answer questions such as ``What is the probability that the minimum temperature is more than 10 degrees Kelvin lower than the average value?''
 In this relatively short simulation run, we see that the spatial patterns in the parameter plots are somewhat rough and non-smooth, particularly for $\beta$; we expect that longer simulation runs and modifications to the GEV variational inference scheme could improve our estimates. 
@@ -312,17 +363,17 @@ We take these results as a promising sign that our models can capture relevant i
 \end{figure}
 
 \subsection{PCA Results}
-Over the one-year simulation run, we extracted the top three spatial principal components of the surface temperature variable using the TributaryPCA method.
+Over the one-year simulation run, we extracted the top three spatial principal components of the surface temperature variable using the TributaryPCA method; the principal components were updated in streaming fashion at each simulation time step (6 hour time steps).
 Figure \ref{fig:pca_results} shows spatial plots of these three principal components. 
 Each component indicates a different spatial pattern of warming (red color) and cooling (blue color) extracted from the simulation data.
-In particular, the first component indicates cooler temperatures away from the equator. 
-The second component indicates warming across much of the Eastern hemisphere, with cooling in the Americas and parts of Africa. 
-The third component indicates cooling in Africa and Europe with warming elsewhere.
+In particular, the first component indicates a temperature differential between equatorial and polar regions; because the mean was not removed, this component can be interpreted as the mean pattern across the time steps. 
+The second component indicates a temperature differential between much of the Eastern hemisphere and the Americas and parts of Africa. 
+The third component indicates a temperature differential between Africa and Europe and other regions.
 While these components were extracted from a fairly short simulation run, the results demonstrate the ability of TributaryPCA to extract important climate patterns while running in a distributed in situ environment, without saving any raw data for post-processing.
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{figures/insitu_pca.png}
-    \caption{First three spatial principal components obtained by in situ TributaryPCA method. Within each component, white color indicates no change to surface temperature, while blue indicates colder and red indicates hotter temperatures. The first principal component appears to indicate mild tropical warming with cooling away from the equator. The second principal component indicates warming in much of the Eastern hemisphere and cooling in Africa and the Americas, while the third component indicates primarily cooling in Africa and Europe.}
+    \caption{First three spatial principal components obtained by in situ TributaryPCA method. Within each component, white color indicates no change to surface temperature, while blue and red indicate temperatures deviating in different directions from zero. The first principal component appears to indicate the overall difference between poles and equator. The second principal component indicates differences between the Eastern hemisphere and Africa/the Americas, while the third component indicates differences in Africa and Europe compared to other regions.}
     \label{fig:pca_results}
 \end{figure}
 
@@ -339,21 +390,23 @@ The atmosphere component of E3SM, CAM, uses a spectral element dynamical core at
 
 
 \begin{table}
-  \caption{PE Layout}
+  \centering
+  \caption{List of our PE Layouts. The PE layouts include three different numbers of MPI ranks and three different numbers of nodes.}
   \label{table:layout}
-  \begin{tabular}{ccl}
+  \begin{tabular}{lccc}
  \toprule
- PE Layout& Number of PEs & Number of PEs per node\\
+ PE Layout& \# of nodes  & \# of PEs  & \# of PEs (MPI   \\
+ &  & (MPI ranks) &  ranks) per node \\
  \midrule
- 100\%S & 1350 & 36 \\
- 50\%S  & 1350 & 18\\
- 25\%S  & 1350 & 9\\
- 100\%M & 1800 & 36\\
- 50\%M  & 1800 & 18\\
- 25\%M  & 1800 & 9\\
- 100\%L & 2700 & 36\\
- 50\%L  & 2700 & 18\\
- 25\%L  & 2700 & 9\\
+ 100\%Small & 38 & 1350 & 36 \\
+ 50\%Small  & 75 & 1350 & 18\\
+ 25\%Small  & 150 & 1350 & 9\\
+ 100\%Medium & 50 & 1800 & 36\\
+ 50\%Medium  & 100 & 1800 & 18\\
+ 25\%Medium  & 200 & 1800 & 9\\
+ 100\%Large & 75 & 2700 & 36\\
+ 50\%Large  & 150 & 2700 & 18\\
+ 25\%Large  & 300 & 2700 & 9\\
  \bottomrule
 \end{tabular}
 \end{table}
@@ -361,20 +414,20 @@ The atmosphere component of E3SM, CAM, uses a spectral element dynamical core at
 
 \subsubsection{Framework Performance}\hspace*{\fill} \\
 
-We first run the high-resolution E3SM problem with both of the SSW\_GEV and PCA in situ analyses. For each analysis, we run with the predefined nine different PE layouts. Figures \ref{fig:ssw_break} and \ref{fig:pca_break} show the execution time breakdown for the SSW\_GEV and PCA in situ experiments, respectively. The blue bars represent the ratios of analysis execution time to the total EAM execution time. The overhead execution time includes the data preparation for the Julia module, loading Julia module, and clean up the Julia module. It can be seen from the results that our developed SSW\_GEV only consumes less than 4\% of the total EAM execution time. PCA is more computationally intensive than SSW\_GEV, and it can take up to 26\% of the total EAM execution time. This is because the main tasks of SSW\_GEV and PCA are linear interpolation and Cholesky decomposition, respectively, with the latter being considerably more complex to compute. In addition, it can be observed that the in situ analysis consumes more time of the EAM execution time for larger layouts and higher PE usage on each node. This is because EAM generates less data per node in large layouts and the in situ analysis is less performance-sensitive than EAM in terms of data reduction. Also, higher PE usage per node raises memory pressure for the in situ analysis.
+We first run the high-resolution E3SM problem with both of the SSW\_GEV and PCA in situ analyses. For each analysis, we run with the predefined nine different PE layouts. Figures \ref{fig:ssw_break} and \ref{fig:pca_break} show the in situ data analysis overhead and the infrastructure overhead, respectively. The overhead bars represent the ratios of the data analysis and infrastructure overhead time to the total EAM execution time. The overhead execution time includes the data preparation for the Julia module, loading Julia module, and clean up the Julia module. It can be seen from the results that our developed SSW\_GEV only consumes less than 4\% of the total EAM execution time. PCA is more computationally intensive than SSW\_GEV, and it can take up to 26\% of the total EAM execution time. This is because the main tasks of SSW\_GEV and PCA are linear interpolation and Cholesky decomposition, respectively. The performance bottleneck of PCA is the expensive Cholesky decomposition. In addition, it can be observed that the in situ analysis consumes more time of the EAM execution time for larger layouts and higher PE usage on each node. This is because EAM generates less data per node in large layouts and the in situ analysis is less performance-sensitive than EAM in terms of data reduction. Also, higher PE usage per node raises memory pressure for the in situ analysis. We also observed that GC might potentially cause irregular system crashes when the in situ data analysis runs for a long time.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=5.5cm]{figures/ssw_break.pdf}
-    \caption{Execution time breakdown for the SSW\_GEV in situ analysis.}
+    \includegraphics[width=\linewidth, height=5.5cm]{paper/figures/analysisoverhead.pdf}
+    \caption{In situ data analysis overhead (ratios of in situ data analysis time to the total EAM time).}
     \label{fig:ssw_break}
 \end{figure}
 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth, height=5.5cm]{figures/pca_break.pdf}
-    \caption{Execution time breakdown for the PCA in situ analysis.}
+    \includegraphics[width=\linewidth, height=5.5cm]{paper/figures/infrastructureoverhead.pdf}
+    \caption{In situ infrastructure overhead (ratios of in situ infrastructure overhead time to the total EAM time).}
     \label{fig:pca_break}
 \end{figure}
 
@@ -426,7 +479,7 @@ We examine the performance variations across all MPI ranks for SSW\_GEV and PCA 
 
 
 
-\section{Conclusion}
+\section{Conclusion} \label{sec6}
 
 
 
