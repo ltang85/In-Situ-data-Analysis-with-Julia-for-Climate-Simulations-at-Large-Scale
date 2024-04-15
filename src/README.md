@@ -55,14 +55,9 @@ CHANGE set(INCLDIR "-I.")
 TO set(INCLDIR "${INCLDIR} -I/turquoise/users/ltang/Install/julia-1.4.0/include/julia")  
 2. The E3SM top linking process uses the old Make system and the changes are made in E3SM/cime/scripts/Tools/Makefile  
 IN Line 956  
-CHANGE  
-\$(EXEC\_SE)$: \$(OBJS)$   
-\$(EXEC\_SE): \$(OBJS) \$(ULIBDEP) \$(CSMSHARELIB) \$(MCTLIBS) \$(PIOLIB) \$(GPTLLIB)  
-$(LD) -o $(EXEC\_SE) $(OBJS) $(CLIBS) $(ULIBS) $(SLIBS) $(MLIBS) $(F90\_LDFLAGS)  
+APPEND \$(JULIALIBS) to the end of linking the command line  
+Add JULIALIBS = -L'/turquoise/users/ltang/Install/julia-1.4.0/lib' -Wl,--export-dynamic -Wl,-rpath,'/turquoise/users/ltang/Install/julia-1.4.0/lib' -Wl,-rpath,'/turquoise/users/ltang/Install/julia1.4.0/lib/julia' -ljulia  
 TO (Note: /turquoise/users/ltang/Install/julia-1.4.0 is my Julia installation path, please change it to your Julia installation path)  
-JULIALIBS = -L'/turquoise/users/ltang/Install/julia-1.4.0/lib' -Wl,--export-dynamic -Wl,-rpath,'/turquoise/users/ltang/Install/julia-1.4.0/lib' -Wl,-rpath,'/turquoise/users/ltang/Install/julia1.4.0/lib/julia' -ljulia  
-$(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(MCTLIBS) $(PIOLIB) $(GPTLLIB)  
-$(LD) -o $(EXEC_SE) $(OBJS) $(CLIBS) $(ULIBS) $(SLIBS) $(MLIBS) $(F90_LDFLAGS) $(JULIALIBS)  
 4. Change the software versions for Grizzly in cime/config/e3sm/machines/config_machines.xml, try to find the following configuration in config_machines.xml and then only make changes in the RED lines. You might also need to delete <modules><command name="load">parallel-netcdf/1.5.0</command></modules>. It works with parallel-netcdf/1.5.0  
 <machine MACH="grizzly">  
 <DESC>LANL Linux Cluster, 36 pes/node, batch system slurm</DESC>  
