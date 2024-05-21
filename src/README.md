@@ -4,7 +4,9 @@ Contact: Li Tang (ltang@lanl.gov)
   
 ## STEP 1. Install and run E3SM example on Grizzly  
 =====================================================================  
-Get the repository: (make sure to add ssh key on github before you clone the repository)  
+Get the repository: (make sure to add ssh key on github before you clone the repository)
+
+```
 git clone git@github.com:E3SM-Project/E3SM.git  
 cd E3SM  
 git fetch origin  
@@ -41,11 +43,12 @@ under case.run section set the value of JOB_WALLCLOCK_TIME = 00:25:00.
 JOB_WALLCLOCK_TIME determines how long you want to run your job. save and exit:  
 env_workflow.xml  
 Run the case:  
-./case.submit  
+./case.submit 
 The process will create a directory called E3SM/e3sm_case_1 in your scratch space.  
 For me the path is: /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1  
 Check job status: squeue -u $USER  
-  
+```
+
 ## STEP 2. Add Julia compilation and linking support to E3SM for Grizzly  
 =====================================================================  
 The E3SM version installed by STEP 1 has two separate systems for compilation and linking.  
