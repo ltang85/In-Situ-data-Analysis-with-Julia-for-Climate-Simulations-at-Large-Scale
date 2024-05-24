@@ -158,33 +158,33 @@ TO (Note: /turquoise/users/ltang/Install/julia-1.4.0 is my Julia installation pa
 
 <ol>
   <li>Add the following declaration in subroutine stepon_run3 of stepon.F90,</li>
-   ```
- real(r8) :: temp_to_julia(nlev)  
- byte :: res_julia  
- byte,external :: jl_eval  
- byte,external :: jl_call_1d_double_array  
- byte,external :: jl_call_subroutine   
-```
+    ```
+    real(r8) :: temp_to_julia(nlev)  
+    byte :: res_julia  
+    byte,external :: jl_eval  
+    byte,external :: jl_call_1d_double_array  
+    byte,external :: jl_call_subroutine   
+    ```
   <li>and put the following code between “#endif” and “subroutine stepon_run3”</li>
-   ```
-if (iam<96) then ! 96 causes invalid memory reference for temp  
-tl_f = TimeLevel%n0  
-do k=1,nlev  
-temp_to_julia(k) = dyn_in%elem(1)%state%T(1,1,k,tl_f)  
-enddo  
-print*,"===MPI RANK",iam,"TIME STEP",get_nstep(),"TEMP",temp_to_julia(1:4)  
-if (is_first_step()) then  
-call jl_init()  
-endif  
-res_julia = jl_call_subroutine("streamean", temp_to_julia(1:4), 4, iam, get_nstep())  
-if (is_last_step()) then  
-call jl_exit()  
-endif  
-endif  
-```
-  <li>copy the interface.c file in the cam folder E3SM/components/cam/src/dynamics/se  </li>
-  <li>copy the Julia file insitu.jl to the case run folder (e.g., /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1/run)  </li>
-<li>csubmit the job  </li>
+    ```
+    if (iam<96) then ! 96 causes invalid memory reference for temp  
+    tl_f = TimeLevel%n0  
+    do k=1,nlev  
+    temp_to_julia(k) = dyn_in%elem(1)%state%T(1,1,k,tl_f)  
+    enddo  
+    print*,"===MPI RANK",iam,"TIME STEP",get_nstep(),"TEMP",temp_to_julia(1:4)  
+    if (is_first_step()) then  
+    call jl_init()  
+    endif  
+    res_julia = jl_call_subroutine("streamean", temp_to_julia(1:4), 4, iam, get_nstep())  
+    if (is_last_step()) then  
+    call jl_exit()  
+    endif  
+    endif  
+    ```
+  <li>copy the interface.c file in the cam folder E3SM/components/cam/src/dynamics/se</li>
+  <li>copy the Julia file insitu.jl to the case run folder (e.g., /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1/run)</li>
+  <li>submit the job</li>
 </ol>
 
   
