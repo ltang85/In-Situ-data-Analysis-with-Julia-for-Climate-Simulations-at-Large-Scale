@@ -2,8 +2,7 @@ This documentation shows how to run the E3SM in situ framework with the streamin
   
 Contact: Li Tang (ltang@lanl.gov)  
   
-<h1>STEP 1. Install and run E3SM example on Grizzly</h1>h1>
-Get the repository: (make sure to add ssh key on github before you clone the repository)
+<h1>STEP 1. Install and run E3SM example on Grizzly</h1>
 
 ```
 git clone git@github.com:E3SM-Project/E3SM.git  
@@ -11,19 +10,19 @@ cd E3SM
 git fetch origin  
 git reset --hard origin/vanroekel/lanl_dr  
 git submodule update --init  
-Setup a new case:  
+# Case setup:  
 cd cime/scripts  
-Now create the new case. In this step you can specify the model you want to run, what resolution  
-of mesh you want and the compiler that will be used to build and run.  
 ./create_newcase -case /users/sdutta/climate/e3sm_case_1 -compset FC5AV1C-L -mach grizzly -res ne4_ne4 -compiler gnu --pecount S  
+```
+
 Here e3sm_case_1 is the name of the directory I gave. It can be anything where all the case specific files will be produced necessary for bulding and running.  
 open file: env_run.xml  
 set value for DIN_LOC_ROOT = /lustre/scratch3/turquoise/lvanroekel/E3SM/input_data (line 885)  
 change STOP_OPTION to nmonths (this sets the unit for STOP_OPTION to months)  
 STOP_N to 5 (this specifies that we are looking to run the model for 5 months) save and exit:  
 env_run.xml  
-open file: user_nl_cam  
-add the following:  
+open file: user_nl_cam, add the following:  
+```
 avgflag_pertape = 'A','A','I','A','A'  
 fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp'  
 fincl2 = 'FLUT', 'PRECT', 'U200', 'V200', 'U850', 'V850', 'Z500', 'OMEGA500', 'UBOT', 'VBOT',  
@@ -32,7 +31,8 @@ fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT'
 fincl4 = 'FLUT','U200','U850','PRECT','OMEGA500'  
 fincl5 = 'PRECT','PRECC'  
 mfilt = 1,30,120,120,240  
-nhtfrq = 0,-24,-6,-6,-3  
+nhtfrq = 0,-24,-6,-6,-3
+```
 save and exit: user_nl_cam  
 setup and build the case:  
 ./case.setup  
