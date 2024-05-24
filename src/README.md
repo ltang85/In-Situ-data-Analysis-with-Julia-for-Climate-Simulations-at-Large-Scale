@@ -1,9 +1,8 @@
-This documentation shows how to run the E3SM in situ framework with the streaming Julia module on LANL's Grizzly.  
+This documentation shows how to run the E3SM in situ framework with the streaming Julia modules on LANL's Grizzly.  
   
 Contact: Li Tang (ltang@lanl.gov)  
   
-## STEP 1. Install and run E3SM example on Grizzly  
-=====================================================================  
+<h1>STEP 1. Install and run E3SM example on Grizzly</h1>h1>
 Get the repository: (make sure to add ssh key on github before you clone the repository)
 
 ```
