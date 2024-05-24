@@ -155,9 +155,7 @@ TO (Note: /turquoise/users/ltang/Install/julia-1.4.0 is my Julia installation pa
   
 <h1>STEP 3. Run the E3SM+Julia example on Grizzly</h1>  
 
-
-<ol>
-  <li>Add the following declaration in subroutine stepon_run3 of stepon.F90,</li>
+<h3>Add the following declaration in subroutine stepon_run3 of stepon.F90,</h3>
     ```
     real(r8) :: temp_to_julia(nlev)  
     byte :: res_julia  
@@ -165,7 +163,7 @@ TO (Note: /turquoise/users/ltang/Install/julia-1.4.0 is my Julia installation pa
     byte,external :: jl_call_1d_double_array  
     byte,external :: jl_call_subroutine   
     ```
-  <li>and put the following code between “#endif” and “subroutine stepon_run3”</li>
+<h3>and put the following code between “#endif” and “subroutine stepon_run3”</h3>
     ```
     if (iam<96) then ! 96 causes invalid memory reference for temp  
     tl_f = TimeLevel%n0  
@@ -182,10 +180,9 @@ TO (Note: /turquoise/users/ltang/Install/julia-1.4.0 is my Julia installation pa
     endif  
     endif  
     ```
-  <li>copy the interface.c file in the cam folder E3SM/components/cam/src/dynamics/se</li>
-  <li>copy the Julia file insitu.jl to the case run folder (e.g., /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1/run)</li>
-  <li>submit the job</li>
-</ol>
+  <h3>copy the interface.c file in the cam folder E3SM/components/cam/src/dynamics/se</h3>
+  <h3>copy the Julia file insitu.jl to the case run folder (e.g., /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1/run)</h3>
+  <h3>submit the job</h3>
 
   
   
