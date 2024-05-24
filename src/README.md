@@ -95,30 +95,26 @@ byte,external :: jl_call_subroutine
 ```
 
   
-and put the following code between “#endif” and “subroutine stepon_run3”  
+Put the following code between “#endif” and “subroutine stepon_run3”  
 ```
 if (iam<96) then ! 96 causes invalid memory reference for temp  
-tl_f = TimeLevel%n0  
-do k=1,nlev  
-temp_to_julia(k) = dyn_in%elem(1)%state%T(1,1,k,tl_f)  
-enddo  
-print*,"===MPI RANK",iam,"TIME STEP",get_nstep(),"TEMP",temp_to_julia(1:4)  
-if (is_first_step()) then  
-call jl_init()  
-endif  
-res_julia = jl_call_subroutine("streamean", temp_to_julia(1:4), 4, iam, get_nstep())  
-if (is_last_step()) then  
-call jl_exit()  
-endif  
+  tl_f = TimeLevel%n0  
+  do k=1,nlev  
+    temp_to_julia(k) = dyn_in%elem(1)%state%T(1,1,k,tl_f)  
+  enddo  
+  print*,"===MPI RANK",iam,"TIME STEP",get_nstep(),"TEMP",temp_to_julia(1:4)  
+  if (is_first_step()) then  
+    call jl_init()  
+  endif  
+  res_julia = jl_call_subroutine("streamean", temp_to_julia(1:4), 4, iam, get_nstep())  
+  if (is_last_step()) then  
+    call jl_exit()  
+  endif  
 endif  
 ```
 
   
-copy the interface.c file in the cam folder E3SM/components/cam/src/dynamics/se  
-
-copy the Julia file insitu.jl to the case run folder (e.g., /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1/run)  
-  
-submit the job  
+Copy the interface.c file in the cam folder E3SM/components/cam/src/dynamics/se, and copy the Julia file insitu.jl to the case run folder (e.g., /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1/run). Then submit the job.    
 
   
   
