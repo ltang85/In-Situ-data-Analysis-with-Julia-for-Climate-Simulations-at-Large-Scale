@@ -4,25 +4,27 @@ Contact: Li Tang (ltang@lanl.gov)
   
 <h1>STEP 1. Install and run E3SM example on Grizzly</h1>
 
+Setup an E3SM case:  
+  
 ```
 git clone git@github.com:E3SM-Project/E3SM.git  
 cd E3SM  
 git fetch origin  
 git reset --hard origin/vanroekel/lanl_dr  
 git submodule update --init  
-# Case setup:  
 cd cime/scripts  
 ./create_newcase -case /users/sdutta/climate/e3sm_case_1 -compset FC5AV1C-L -mach grizzly -res ne4_ne4 -compiler gnu --pecount S  
 ```
 
-Here e3sm_case_1 is the name of the directory I gave. It can be anything where all the case specific files will be produced necessary for bulding and running.  
-open file: env_run.xml
+Set the path of the input data and caserun infomation (e.g., run the model for 5 months) for the created E3SM case in **env_run.xml**:  
+  
 ```
-set value for DIN_LOC_ROOT = /lustre/scratch3/turquoise/lvanroekel/E3SM/input_data (line 885)  
-change STOP_OPTION to nmonths (this sets the unit for STOP_OPTION to months)  
-STOP_N to 5 (this specifies that we are looking to run the model for 5 months) save and exit:  
-env_run.xml  
-open file: user_nl_cam, add the following:  
+DIN_LOC_ROOT = **your input_data path**  
+STOP_OPTION = nmonths  
+STOP_N = 5
+```
+
+Configure **user_nl_cam** and add the following to the configuration file (create it if it does not exist):  
 ```
 avgflag_pertape = 'A','A','I','A','A'  
 fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp'  
@@ -34,21 +36,17 @@ fincl5 = 'PRECT','PRECC'
 mfilt = 1,30,120,120,240  
 nhtfrq = 0,-24,-6,-6,-3
 ```
-save and exit: user_nl_cam  
-setup and build the case:  
+
+Test run:  
+  
+```
 ./case.setup  
 ./case.build  
-open file: env_workflow.xml  
-under case.run section set the value of JOB_WALLCLOCK_TIME = 00:25:00.  
-JOB_WALLCLOCK_TIME determines how long you want to run your job. save and exit:  
-env_workflow.xml  
-Run the case:  
 ./case.submit 
-The process will create a directory called E3SM/e3sm_case_1 in your scratch space.  
-For me the path is: /lustre/scratch3/turquoise/sdutta/E3SM/e3sm_case_1  
-Check job status: squeue -u $USER  
 ```
 
+
+  
 <h1>STEP 2. Add Julia compilation and linking support to E3SM for Grizzly</h1>  
 
 The E3SM version installed by STEP 1 has two separate systems for compilation and linking.  
