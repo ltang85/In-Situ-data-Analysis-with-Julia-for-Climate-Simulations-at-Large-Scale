@@ -16,7 +16,8 @@ cd cime/scripts
 ```
 
 Here e3sm_case_1 is the name of the directory I gave. It can be anything where all the case specific files will be produced necessary for bulding and running.  
-open file: env_run.xml  
+open file: env_run.xml
+```
 set value for DIN_LOC_ROOT = /lustre/scratch3/turquoise/lvanroekel/E3SM/input_data (line 885)  
 change STOP_OPTION to nmonths (this sets the unit for STOP_OPTION to months)  
 STOP_N to 5 (this specifies that we are looking to run the model for 5 months) save and exit:  
