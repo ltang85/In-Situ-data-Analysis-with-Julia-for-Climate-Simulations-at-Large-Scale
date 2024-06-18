@@ -1,5 +1,7 @@
 # Julia for HPC: In Situ Data Analysis with Julia for Climate Simulations at Large Scale
 
+[![DOI](https://zenodo.org/badge/563585650.svg)](https://zenodo.org/doi/10.5281/zenodo.12104096)
+
 This repository is the archive of our JuliaCon paper and the code for reproducing the results presented in our paper.
 
 
