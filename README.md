@@ -1,17 +1,16 @@
 # Julia for HPC: In Situ Data Analysis with Julia for Climate Simulations at Large Scale
 
-This repository is the archive of our JuliaCon paper and code for reproducing the results in our paper.
+This repository is the archive of our JuliaCon paper and the code for reproducing the results presented in our paper.
 
 
 ## Structure
 
-**Important** do no fork this repo to create a JuliaCon submission.
-The JuliaCon paper should live in the repository of the software you are presenting in a `/paper` folder at the top-level.
-If you do not want to introduce a `/paper` folder in your software, you can do so in an arbitrary branch.
+paper: LaTex files for producing the paper pdf file
+src: code and instructions for reproducing the paper's results
 
 ## Other resources
 
-For more information of our in situ data analysis modules in Julia, check out [LANL's PRISM](https://github.com/lanl/PRISM).
+For more information of our other in situ data analysis modules in Julia, check out [LANL's PRISM](https://github.com/lanl/PRISM).
 
 ## Acknowledgement
 
