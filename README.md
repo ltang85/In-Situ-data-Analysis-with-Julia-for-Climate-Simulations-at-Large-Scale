@@ -5,8 +5,8 @@ This repository is the archive of our JuliaCon paper and the code for reproducin
 
 ## Structure
 
-paper: LaTex files for producing the paper pdf file
-src: code and instructions for reproducing the paper's results
+paper: LaTex files for producing the paper pdf file  
+src: code and instructions for reproducing the paper's results  
 
 ## Other resources
 
