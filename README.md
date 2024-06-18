@@ -1,20 +1,17 @@
-# JuliaConSubmission
+# Julia for HPC: In Situ Data Analysis with Julia for Climate Simulations at Large Scale
 
-This repository is an example for a proceeding submission at JuliaCon.
-Feel free to use the template in `/paper` to prepare yours.
-For more information, check out the [author's guide](https://juliacon.github.io/proceedings-guide/author/) and [proceedings.juliacon.org](http://proceedings.juliacon.org).
+This repository is the archive of our JuliaCon paper and code for reproducing the results in our paper.
 
-## Importing into your project
+
+## Structure
 
 **Important** do no fork this repo to create a JuliaCon submission.
 The JuliaCon paper should live in the repository of the software you are presenting in a `/paper` folder at the top-level.
 If you do not want to introduce a `/paper` folder in your software, you can do so in an arbitrary branch.
 
-## Paper dependencies
+## Other resources
 
-The document can be built locally, the following dependencies need to be installed:
-- Ruby
-- latexmk
+For more information of our in situ data analysis modules in Julia, check out [LANL's PRISM](https://github.com/lanl/PRISM).
 
 ## Acknowledgement
 
