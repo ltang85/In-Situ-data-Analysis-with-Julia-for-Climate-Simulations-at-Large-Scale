@@ -16,26 +16,12 @@ The document can be built locally, the following dependencies need to be install
 - Ruby
 - latexmk
 
-## Build process
+## Acknowledgement
 
-Build the paper using:
-```
-$ latexmk -bibtex -pdf paper.tex
-```
+Research presented in this paper was supported by the Laboratory Directed Research and Development program of Los Alamos National Laboratory under project number 20200065DR.
+E3SM was obtained from the Energy Exascale Earth System Model project, sponsored by the U.S. Department of Energy, Office of Science, Office of Biological and Environmental Research.
+This research used resources provided by the Los Alamos National Laboratory Institutional Computing Program, which is supported by the U.S. Department of Energy National Nuclear Security Administration under Contract No. 89233218CNA000001.
 
-Clean up temporary files using:
-```
-$ latexmk -c
-```
+## Disclaimer
 
-## Paper metadata
-
-**IMPORTANT**
-Some information for building the document (such as the title and keywords)
-is provided through the `paper.yml` file and not through the usual `\title`
-command. Respecting the process is important to avoid build errors when
-submitting your work.
-
-## Get from OverLeaf
-
-The paper folder can be downloaded from [OverLeaf](https://www.overleaf.com/read/dcvvhkyynmzt).
+This paper is approved for public release under LA-UR-22-31718.
