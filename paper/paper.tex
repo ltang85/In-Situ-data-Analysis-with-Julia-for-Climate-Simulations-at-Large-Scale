@@ -189,12 +189,12 @@ As discussed previously, another key design of the Julia interface is to correct
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = Julia, caption={Juila interface MPI conversion.}]
-\\ OpenMPI
+// OpenMPI
 Jcomm = MPI.Comm(ccall((:MPI_Comm_f2c, \
         "openmpi/lib/libmpi.so"),Ptr{Cvoid}, \
         (Cint,),Cint(Jcomm)))
 
-\\ MPICH and MVAPICH
+// MPICH and MVAPICH
 Jcomm = MPI.Comm(Cint(Jcomm))
 \end{lstlisting}
 \end{minipage}
