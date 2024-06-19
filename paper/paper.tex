@@ -185,7 +185,7 @@ int* p_arr, int* p_len, MPI_Fint *Fcomm){
 \subsection{Julia Interface}
 
 The Julia interface mainly defines the format of input data, so all in situ Julia data analysis methods can be plugged-in without additional E3SM compilation, thanks to Julia's Just-in-time (JIT) compilation.
-As discussed previously, another key design of the Julia interface is to correctly convert the Fortran MPI communicator to Julia MPI communicator, which enables the algorithm developers to write their analysis routines using the same EAM MPI communicator. Due to the low-level MPI implementations, different MPI libraries (i.e., OpenMPI, MPICH, and MVAPICH) require specific converters; the following code snippet shows the converter implementations~\cite{gabriel2004open,panda2021mvapich,gropp1996high}.
+As discussed previously, another key design of the Julia interface is to correctly convert the Fortran MPI communicator to Julia MPI communicator, which enables the algorithm developers to write their analysis routines using the same EAM MPI communicator. Due to the low-level MPI implementations, different MPI libraries (i.e., OpenMPI, MPICH, and MVAPICH) require specific converters; the following code snippet shows the converter implementations~\cite{graham2006open,panda2021mvapich,gropp1996high}.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = Julia, caption={Juila interface MPI conversion.}]
