@@ -10,7 +10,7 @@ authors:
     affiliation: 1
   - name: Soumya Dutta
     orcid: 0000-0001-5030-9979
-    affiliation: 1, 2
+    affiliation: 2
   - name: Natalie Klein
     orcid: 0000-0002-7532-4013
     affiliation: 1
@@ -35,7 +35,7 @@ affiliations:
     index: 1
   - name: Indian Institute of Technology Kanpur
     index: 2
-  - name: University of Michigan
+  - name: Google LLC
     index: 3
   - name: Brookhaven National Laboratory
     index: 4
