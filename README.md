@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/563585650.svg)](https://zenodo.org/doi/10.5281/zenodo.12104096)
 
+[![DOI](https://proceedings.juliacon.org/papers/10.21105/jcon.00134/status.svg)](https://doi.org/10.21105/jcon.00134)
+
 This repository is the archive of our JuliaCon paper and the code for reproducing the results presented in our paper.
 
 
